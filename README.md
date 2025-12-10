@@ -1,0 +1,1 @@
+# ai_recruitment_odoo_module
