@@ -16,7 +16,6 @@ It enhances the hiring process by adding AI-assisted features without exposing i
 - ✔ One-click workflow automation  
 - ✔ API endpoints to connect external AI engines  
 
-> ⚠️ This repository contains only **module structure + placeholders**.  
 > Your private AI logic should be placed inside the designated sections in the Python files.
 
 ---
@@ -39,7 +38,7 @@ It enhances the hiring process by adding AI-assisted features without exposing i
 
 ## 🛠 Installation
 
-1. Copy the folder `ai_recruitment` into your Odoo `addons` directory.
+1. Copy the folder into your Odoo `addons` directory.
 2. Activate developer mode.
 3. Update Apps List.
 4. Search for **AI Recruitment** and install.
@@ -58,5 +57,31 @@ In Settings → AI Integration:
 
 ## 🚧 Add Your Private AI Logic
 
-Inside:
+ai_recruitment/
+│── __manifest__.py
+│── __init__.py
+│
+├── models/
+│   ├── __init__.py
+│   ├── applicant_ai.py
+│   ├── cv_parser.py
+│   └── ai_matching.py
+│
+├── controllers/
+│   ├── __init__.py
+│   └── api_controller.py
+│
+├── security/
+│   ├── ir.model.access.csv
+│
+├── views/
+│   ├── applicant_ai_views.xml
+│   ├── menu.xml
+│   └── templates.xml
+│
+└── static/
+    └── description/
+        ├── icon.png
+        └── index.html
+
 
