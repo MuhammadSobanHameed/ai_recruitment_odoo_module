@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="candidate_list_view" model="ir.ui.view">
+        <field name="name">Candidate.Profile</field>
+        <field name="model">candidate.profile</field>
+        <field name="arch" type="xml">
+            <tree string="Candidate">
+                <field name="name"/>
+                <field name="father_name" optional="hide"/>
+                <field name="consultation"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="country_id"/>
+                <field name="dob"/>
+                <field name="activity_ids" string="Activity"/>
+                <field name="current_job" optional="hide"/>
+                <field name="current_employer" optional="hide"/>
+                <field name="notice_required" optional="hide"/>
+                <field name="salary_range" optional="hide"/>
+
+            </tree>
+        </field>
+    </record>
+    <record id="view_candidate_id" model="ir.ui.view">
+        <field name="name">Candidate.Profile</field>
+        <field name="model">candidate.profile</field>
+        <field name="arch" type="xml">
+            <form string="Candidate">
+                <header>
+                    <button name="parse_and_save_to_cv_bank" string="Parse CV" class="oe_highlight" type="object"/>
+                    <button name="share_to_whatsapp" class="oe_highlight" string="Share Whatsapp" type="object"
+                            icon="fa-whatsapp" style="background-color:#5cbd24;color:white;border-radius:10px;"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <label for="id" string="Candidate ID" style="color:blue;"/>
+                    <field name="id"/>
+                    <br/>
+                    <!-- Modified to include CV Bank functionality -->
+                    <div class="row">
+                        <div class="col-6">
+                            <field name="cv_file" filename="cv_filename" widget="binary" string="Upload CV" 
+                                   help="Upload a CV to parse and save to CV Bank"/>
+                        </div>
+                        <div class="col-6" attrs="{'invisible': [('cv_file', '=', False)]}">
+                            <label for="save_to_cv_bank"/>
+                            <field name="save_to_cv_bank" />
+                        </div>
+                    </div>
+                    <group style="height:200px;">
+                        <group>
+                            <field name="name"/>
+                            <field name="consultation"/>
+                            <field name="names" invisible="1"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="phone"/>
+                            <field name="gender"/>
+                        </group>
+                        <group>
+                            <field name="cv_filename" invisible="1"/>
+                        </group>
+                    </group>
+                                     
+                    <notebook>
+                        <page string="Personal Information" name="personal_information">
+                            <form>
+                            <group>
+                            <field name="summary"/>
+                            </group>
+
+                                <group string="Personal_Info" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="millage"/>
+                                        <field name="address_l1"/>
+                                        <field name="city"/>
+                                        <field name="state"/>
+                                        <field name="country_id"/>
+                                        <field name="national_insurance"/>
+                                        <field name="flagged"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="mobile_phone"/>
+                                        <field name="mobile_phone2"/>
+                                        <field name="postal_code"/>
+                                        <field name="name"/>
+                                        <field name="dob"/>
+                                        <field name="gender"/>
+                                        <field name="nationality"/>
+                                        <field name="marital_status"/>
+
+                                    </group>
+                                </group>
+                                <group string="Contact_Info" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="email"/>
+                                        <field name="phone"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="home_phone"/>
+                                        <field name="work_phone"/>
+
+                                    </group>
+                                </group>
+
+                                <group string="Social_Media" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="facebook_url" widget="url"/>
+                                        <field name="Twitter_url" widget="url"/>
+                                        <field name="Linkedin_url" widget="url"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="github" widget="url"/>
+                                        <field name="portfolio" widget="url"/>
+                                    </group>
+                                </group>
+                                <group string="Location_Info" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="address_l1"/>
+                                        <field name="city"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="state"/>
+                                        <field name="postcode"/>
+                                        <field name="country_id"/>
+                                    </group>
+                                </group>
+                                <group string="Source" style="color:blue;">
+                                    <field name="source_id"/>
+                                </group>
+
+                                <group string="Education" style="color:blue; max-width: 1100px;">
+                                    <div style="max-height: 300px;max-width:1050px; overflow-y: auto; overflow-x:auto; color:black;">
+                                        <group>
+                                            <!--                                        <field name="education_id"/>-->
+                                            <field name="education_ids">
+                                                <tree editable="bottom">
+                                                    <field name="sequence" widget="handle"/>
+                                                    <field name="degree"/>
+                                                    <field name="institution"/>
+                                                    <field name="dates"/>
+                                                    <field name="additional_info"/>
+                                                </tree>
+                                                <form>
+                                                    <group>
+                                                        <field name="degree"/>
+                                                        <field name="institution"/>
+                                                        <field name="dates"/>
+                                                        <field name="additional_info"/>
+                                                    </group>
+                                                </form>
+                                            </field>
+                                        </group>
+                                    </div>
+                                </group>
+                                <group string="Professional Experience" style="color:blue; max-width: 1100px;">
+                                    <div style="max-height: 300px;max-width:1050px; overflow-y: auto; overflow-x:auto; color:black;">
+                                        <group>
+                                            <!--                                        <field name="experience"/>-->
+                                            <field name="experience_ids">
+                                                <tree editable="bottom">
+                                                    <field name="sequence" widget="handle"/>
+                                                    <field name="job_titles"/>
+                                                    <field name="companies"/>
+                                                    <field name="employment_dates"/>
+                                                    <field name="key_responsibilities"/>
+                                                </tree>
+                                                <form>
+                                                    <group>
+                                                        <field name="job_titles"/>
+                                                        <field name="companies"/>
+                                                        <field name="employment_dates"/>
+                                                        <field name="key_responsibilities"/>
+                                                    </group>
+                                                </form>
+                                            </field>
+                                        </group>
+                                    </div>
+                                </group>
+                                <group string="Current" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="current_employer"/>
+
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="current_job"/>
+                                    </group>
+                                </group>
+                                <group string="language" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="languages"/>
+
+                                    </group>
+
+                                </group>
+                                <group string="skill" style="color:blue;">
+                                    <group style="color:black; width: 100%;">
+                                        <field name="skills"/>
+
+                                    </group>
+
+                                </group>
+                            </form>
+                        </page>
+                        <!--Employment Page -->
+                        <page string="Employment" name="employment">
+                            <form>
+                                <group string="Looking For..." style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="job_title"/>
+                                        <field name="time_and_money"/>
+                                        <field name="salary_range"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="temp_or_perm_id"/>
+                                        <field name="request_start_date"/>
+                                    </group>
+                                </group>
+                                <group string="LOCATION" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="req_country"/>
+                                        <field name="req_region"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="additional_country"/>
+                                        <field name="additional_region"/>
+                                    </group>
+                                </group>
+                                <group string="JOB STATUS" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="priority" widget="priority"/>
+                                        <field name="cv_status"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="track_tab"/>
+                                    </group>
+                                </group>
+                                <group string="CLIENT PORTAL" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="active"/>
+                                        <field name="further_information"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="candidate_profile"/>
+                                        <field name="cprofile"/>
+                                    </group>
+                                </group>
+                                <group string="SKILL ADN EXPERIENCE" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="job_title"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="industry"/>
+                                    </group>
+                                </group>
+                                <group string="QUALIFICATIONS" style="color:blue;">
+                                    <field name="qualification_status"/>
+                                </group>
+                                <group string="HISTORY " style="color:blue;">
+                                    <group style="color:black;">
+
+                                        <field name="notice_required"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="existing_client"/>
+                                        <field name="new_client"/>
+                                        <field name="current_salary"/>
+                                    </group>
+                                </group>
+                                <group string="WORK PERMITS" style="color:blue;">
+                                    <group style="color:black;">
+                                        <field name="application_form"/>
+                                        <field name="work_permit_required"/>
+                                    </group>
+                                    <group style="color:black;">
+                                        <field name="work_status"/>
+                                    </group>
+                                </group>
+                            </form>
+                        </page>
+                        <!--COMMUNICATION Page-->
+                        <page string="COMMUNICATION" name="application">
+                            <h3 style="color:blue">Messages And Activities of Applications</h3>
+                            <field name="messages_id">
+                                <tree>
+                                    <field name="subject" optional="show"/>
+                                    <field name="body" optional="show"/>
+                                    <field name="email_from" optional="show"/>
+                                    <field name="message_id" optional="hide"/>
+                                    <field name="reply_to" optional="show"/>
+                                    <field name="create_date" optional="show"/>
+                                    <field name="res_id" optional="show"/>
+                                    <field name="model" optional="show"/>
+                                </tree>
+                            </field>
+                            <br/>
+                            <br/>
+                            <h3 style="color:blue">Calendar Events of Applications</h3>
+                            <field name="calendar_event_id">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="videocall_location" optional="show"/>
+                                    <field name="stop_date" optional="show"/>
+                                    <field name="start_date" optional="show"/>
+                                    <field name="duration" optional="show"/>
+                                    <field name="create_date" optional="show"/>
+                                    <field name="res_id" optional="show"/>
+                                    <field name="res_model" optional="show"/>
+                                </tree>
+                            </field>
+                            <form style="color:blue" string="Candidate Communication">
+                                <sheet>
+                                    <br/>
+                                    <br/>
+                                    <!--                            <h3 style="color:blue">Candidate Communication</h3>-->
+                                    <div class="oe_chatter">
+                                        <field name="message_follower_ids" groups="base.group_user"/>
+                                        <field name="activity_ids"/>
+                                        <field name="message_ids"/>
+                                    </div>
+                                </sheet>
+                            </form>
+                        </page>
+
+
+                        <page string="Documents" name="document">
+                            <field name="document_list" string="Applicant Documents">
+                                <tree>
+                                    <field name="sl_no"/>
+                                    <field name="name"/>
+                                    <field name="datas"/>
+                                    <field name="company_id"/>
+                                    <field name="type"/>
+                                    <field name="create_uid"/>
+                                    <field name="create_date"/>
+                                    <field name="res_model"/>
+                                    <field name="res_id"/>
+                                </tree>
+                            </field>
+                            <br/>
+                            <button name="open_wizard" class="oe_highlight" type="object" string="Upload Additional Documents"/>
+
+                            <br/>
+                            <field name="candidate_document" string="Candidate Documents">
+                                <tree>
+                                    <field name="sl_no"/>
+                                    <field name="name"/>
+                                    <field name="datas"/>
+                                    <field name="company_id"/>
+                                    <field name="type"/>
+                                    <field name="create_uid"/>
+                                    <field name="create_date"/>
+                                    <field name="res_model"/>
+                                    <field name="res_id"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Applications" name="application">
+                            <tree editable="bottom">
+                                <field name="application_ids"/>
+                            </tree>
+                        </page>
+                    </notebook>
+
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View for candidate profile-->
+    <record id="view_search_candidate_id" model="ir.ui.view">
+        <field name="name">candidate.search.view</field>
+        <field name="model">candidate.profile</field>
+        <field name="arch" type="xml">
+            <search string="Candidate Search">
+                <field name="name" string="Candidate Name"/>
+                <field name="email" string="Email"/>
+                <field name="phone" string="Phone"/>
+                <field name="dob" string="Date Of Birth"/>
+                <field name="id" string="ID"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="candidate_view_activity" model="ir.ui.view">
+        <field name="name">candidate.activity</field>
+        <field name="model">candidate.profile</field>
+        <field name="arch" type="xml">
+            <activity string="Candidates">
+                <templates>
+                    <div t-name="activity-box">
+                        <field name="name"/>
+                        <div class="flex-grow-1">
+                            <field name="name" display="full" class="o_text_block"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+
+    <!-- Action for Candidate -->
+    <record id="action_candidate_view" model="ir.actions.act_window">
+        <field name="name">Candidate Records</field>
+        <field name="res_model">candidate.profile</field>
+        <field name="view_mode">tree,form,search,activity</field>
+        <!--                 <field name="context">{'group_by': 'email_from'}</field>-->
+    </record>
+    <!--Menu of Candidate -->
+    <menuitem id="candidate_menu_id" name="View Candidate" parent="hr_recruitment.menu_hr_recruitment_root"
+              action="action_candidate_view" sequence="3"/>
+
+    <!--    Action for candidate reporting-->
+    <record id="new_candidate_registered_action_id" model="ir.actions.act_window">
+        <field name="name">New Candidate Registered</field>
+        <field name="res_model">candidate.profile</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'group_by': 'create_uid'}</field>
+    </record>
+
+
+    Menu for Candidate Reporting
+    <menuitem id="new_candidate_registered_id" name="New Candidate Registered"
+              parent="hr_recruitment.report_hr_recruitment" action="new_candidate_registered_action_id" sequence="6"/>
+</odoo>

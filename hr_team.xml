@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="hr_team_view_form_id" model="ir.ui.view">
+            <field name="name">HR Team</field>
+            <field name="model">hr.team</field>
+            <field name="arch" type="xml">
+                <form string="HR Team">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="hr_name" string="HR Team"/>
+                            <h1>
+                                <field class="text-break" name="hr_name" placeholder="e.g. North America"/>
+                            </h1>
+                        </div>
+
+                        <field name="hr_quotation"/>
+                        <label for="hr_quotation" string="Quotation"/>
+                        <br/>
+                        <field name="hr_pipeline"/>
+                        <label for="hr_pipeline" string="Pipeline"/>
+
+
+                        <group>
+                            <group name="left" string="Team Details">
+                                <field name="hr_team_leader" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                                <field name="hr_email_aliar"/>
+                                <field name="hr_accept_email_from"/>
+                                <field name="hr_company"/>
+                                <field name="hr_applicant_target" widget="monetary"/>
+                            </group>
+                            <group name="right">
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="HR Members">
+                                <field name="hr_user_id" mode="kanban" class="w-100">
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="hr_team_view_tree_id" model="ir.ui.view">
+            <field name="name">HR Team</field>
+            <field name="model">hr.team</field>
+            <field name="arch" type="xml">
+                <tree string="HR Team">
+                    <field name="hr_name"/>
+                    <field name="hr_team_leader" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                </tree>
+            </field>
+        </record>
+        <record id="hr_team_action_id" model="ir.actions.act_window">
+            <field name="name">HR Team</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.team</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="hr_team_menu_id" name="HR Team" parent="hr_recruitment.menu_hr_recruitment_configuration"
+                  action="hr_team_action_id" sequence="4"/>
+    </data>
+</odoo>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_client_form_inherit" model="ir.ui.view">
+            <field name="name">Client.form.Inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='schedule_meeting']" position="before">
+                    <button class="oe_stat_button" string="Send Email" type="object" name="send_email_to_individual"
+                            icon="fa-envelope-o"
+                            style="width:140px;background-color:rgb(41,126,132);color:white;"/>
+                </xpath>
+
+                <xpath expr="//button[@name='send_email_to_individual']" position="after">
+                    <button name="share_to_whatsapp" class="oe_highlight" string="Share Whatsapp" type="object"
+                            icon="fa-whatsapp" style="background-color:#5cbd24;color:white;border-radius:10px;"/>
+                </xpath>
+                <page name="internal_notes" position="after">
+                    <!-- Your tab content goes here -->
+                    <page string="Recruitment Jobs">
+                        <field name="job" widget="many2many"/>
+                        <field name="phone"/>
+                    </page>
+                    <page string="Notes">
+                        <field name="notes" placeholder="Add Notes Here"/>
+                    </page>
+                </page>
+
+
+            </field>
+        </record>
+    </data>
+    <!--Action for client where domain is satisfy-->
+    <record id="account_res_partner_action_customer" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,form,tree,pivot,graph,dashboard</field>
+        <field name="context">{'default_internal_notes ': 'invisible','default_sales_purchases': 'invisible'}</field>
+        <field name="domain">[('is_company', '=', True)]</field>
+    </record>
+
+    <!--Add Client position menu in recruitment-->
+    <menuitem id="customer_menu_on_recruitment" name="Client" parent="hr_recruitment.menu_hr_recruitment_root"
+              action="account_res_partner_action_customer" sequence="3"/>
+
+    <!--Inherit client tree view and add email sending button in it-->
+    <record id="view_client_tree_inherit" model="ir.ui.view">
+        <field name="name">client tree inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <tree>
+                <header>
+                    <button type="object" name="space"/>
+                    <button string="Send Email" type="object" class="oe_highlight" name="open_mail_compose"/>
+                </header>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Action for Client Reporting-->
+    <record id="new_clients_added_action_id" model="ir.actions.act_window">
+        <field name="name">New Clients Added</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,kanban,pivot,form,graph,dashboard</field>
+        <field name="context">{'group_by': 'create_uid','create': False, 'edit': False,}</field>
+        <field name="domain">[('is_company', '=', True)]</field>
+    </record>
+
+    <!-- This Menu For Reporting of Client Analysis-->
+    <menuitem id="new_clients_added_menu_id" name="New Clients Added" parent="hr_recruitment.report_hr_recruitment"
+              action="new_clients_added_action_id" sequence="7"/>
+
+    <!--Action for Contact Reporting analysis-->
+    <record id="new_contact_added_action_id" model="ir.actions.act_window">
+        <field name="name">New Contact Added</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,kanban,pivot,form,graph,dashboard</field>
+        <field name="context">{'group_by': 'create_uid','create': False, 'edit': False}</field>
+        <field name="domain">[('is_company', '=', False)]</field>
+    </record>
+
+    <!-- Menu for Contact Reporting Analysis-->
+    <menuitem id="contact_added_menu_id" name="New Contacts Added" parent="hr_recruitment.report_hr_recruitment"
+              action="new_contact_added_action_id" sequence="8"/>
+
+
+</odoo>

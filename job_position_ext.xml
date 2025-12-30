@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+    <record id="job_position_recruitment_inherit" model="ir.ui.view">
+        <field name="name">hr.job.recruitment.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="arch" type="xml">
+            <xpath position="attributes" expr="//field[@name='address_id']">
+                <attribute name="string">Client</attribute>
+                <attribute name="context">{}</attribute>
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <br/>
+                <field name="job_url" invisible="1" default="None"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherited Job Position Wizard Form View -->
+    <record id="inherit_hr_job_form_id" model="ir.ui.view">
+        <field name="name">Job Url</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_simple_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="job_url" invisible="1" default="None"/>
+                <field name="ai_suggested_skills" readonly="1" widget="tags"/>
+                <field name="selected_skills" widget="tags" invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Job position form view inherit-->
+    <record id="job_position_inherit_form" model="ir.ui.view">
+        <field name="name">hr.job.inherit.form</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+            <xpath position="after" expr="//button[@name='set_recruit']">
+                <button name="action_generate_job_description" type="object" string="Generate Job Description" class="btn-primary"/>
+                <button name="job_share_on_facebook"
+                        string="Post on Facebook"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('website_published', '=', False)]}"/>
+                <button name="post_to_linkedin"
+                        string="Post on LinkedIn"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('website_published', '=', False)]}"/>
+                <button name="action_generate_test"
+                        string="Generate Test"
+                        type="object"
+                        class="btn-primary"/>
+            </xpath>
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="candidate_search"
+                        icon="fa-user" invisible="1">
+                    <field string="Candidate" name="candidate_count" widget="statinfo" invisible="1"/>
+                </button>
+                <!-- CV Matching Button from third file -->
+                <button class="oe_stat_button" icon="fa-users" type="object"
+                        name="action_view_applicants_from_matching"
+                        attrs="{'invisible': [('applicant_count_from_matching', '=', 0)]}">
+                    <field string="From CV Matching" name="applicant_count_from_matching" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath position="before" expr="//field[@name='no_of_recruitment']">
+                <field name="job_type_id" invisible="True"/>
+                <field name="contract_period" attrs="{'invisible': [('job_type_id', '!=', 'contract')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='no_of_recruitment']" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="like_comment" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ai_suggested_skills" readonly="1" widget="tags" invisible="True"/>
+            </xpath>
+
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="documents"/>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="before">
+
+                <group>
+                    <group>
+                        <field name="job_type"/>
+                        <field name="working_model"/>
+                        <field name="min_experience"/>
+                        <field name="max_experience"/>
+                        <field name="number_of_openings"/>
+                        <field name="country_id"/>
+                        <field name="state_id"/>
+                        <field name="city"/>
+                    </group>
+                    <group>
+                        <field name="currency_id"/>
+                        <field name="salary_min"/>
+                        <field name="salary_max"/>
+                        <field name="no_of_recruitment"/>
+                        <field name="industry_id"/>
+                        <field name="experience_id"/>
+                        <field name="ai_suggested_skills" readonly="1" widget="tags"/>
+                        <field name="selected_skills" widget="tags" placeholder="Select or adjust skills..."/>
+                    </group>
+
+                    <group style="width: 100%;">
+                        <field name="generated_description" colspan="4" nolabel="1" widget="html"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='generated_description']" position="before">
+                <group string="Additional Questions" style="width: 100%;">
+                    <field name="additional_question_ids">
+                        <tree string="Additional Questions" editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="question"/>
+                            <field name="answer_type"/>
+                            <field name="is_required"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+
+            <notebook position="inside">
+                <page string="Additional Details">
+
+                    <group>
+                        <field name="sub_industry_id"/>
+                        <field name="sub_experience_id"/>
+                    </group>
+                </page>
+                <page name="job_compensations" string="Job Compensations">
+                    <group>
+                        <group>
+                            <h3 style="color: #2F2FA2">Job Compensation</h3>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="salary_type"/>
+                        </group>
+                        <group>
+                            <field name="months_year"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="salary_rate_per_month"
+                                   attrs="{'invisible': [('salary_type', '!=', 'monthly')]}"/>
+                            <field name="annual_salary" attrs="{'invisible': [('salary_type', '!=', 'annual')]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="range_from"/>
+                        </group>
+                        <group>
+                            <field name="range_to"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <h3 style="color: #2F2FA2">ForCasted By</h3>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="percent_of_salary"/>
+                        </group>
+                    </group>
+                </page>
+                <page name="candidate_profile" string="Selected Candidate">
+                    <group>
+                        <h3 style="color: #2F2FA2">Weightage</h3>
+
+                        <field name="experience_weight"
+                               style="border: 2px solid #ddd;margin-bottom: 10px;background-color: #f0f0f0;border-radius: 4px; width:20%; margin-left:-60%"/>
+                        <field name="education_weight"
+                               style="border: 2px solid #ddd;margin-bottom: 10px;background-color: #f0f0f0;border-radius: 4px; width:20%; margin-left:-60%"/>
+                        <field name="skills_weight"
+                               style="border: 2px solid #ddd;margin-bottom: 10px;background-color: #f0f0f0;border-radius: 4px; width:20%; margin-left:-60%"/>
+                        <field name="ai_skills_weight"
+                               style="border: 2px solid #ddd;margin-bottom: 10px;background-color: #f0f0f0;border-radius: 4px; width:20%; margin-left:-60%"/>
+
+                    </group>
+                    <group>
+                        <h3 style="color: #2F2FA2">AI Suggested Skills</h3>
+                        <field name="ai_suggested_skills" readonly="1" widget="tags" invisible="1"/>
+                        <!--                        <label for="selected_skills">AI Skills</label>-->
+                        <field name="selected_skills" widget="tags" placeholder="Select or adjust skills..."
+                               style="border-radius: 8px; padding: 6px; font-size: 14px;"/>
+                    </group>
+                    <group>
+                        <h3 style="color: #2F2FA2">Select CVs from CV Bank</h3>
+                        <br/>
+                        <field name="name_keywords" readonly="1"
+                               attrs="{'invisible': [('name_keywords', '=', False)]}"
+                               string="Matching Keywords"
+                               invisible="1"/>
+
+
+                        <!-- Hidden field to store matching CVs for domain -->
+                        <field name="matching_cv_ids" invisible="1"/>
+                        <field name="name_keywords" invisible="1"/>
+
+                        <field name="cv_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'no_quick_create': True}"
+                               domain="[('parsed_name', '!=', False), ('id', 'in', matching_cv_ids)]"
+                               placeholder="🔎 Search and select CVs related to this job..."
+                               context="{'default_parsed_skills': name, 'search_default_filter_has_skills': 1}"
+                               style="border-radius: 8px; padding: 6px; font-size: 14px;"/>
+
+
+                        <!--                                                <field name="cv_ids" widget="many2many_tags" options="{'no_create': True}"-->
+                        <!--                                                       domain="[('parsed_name', '!=', False),('parsed_skills', 'ilike', name)]" context="{'default_parsed_skills': name}"/>-->
+                    </group>
+                    <group>
+                        <button name="action_match_selected_cvs"
+                                type="object"
+                                class="btn btn-primary shadow-sm"
+                                style="padding: 10px 24px; border-radius: 10px; font-weight: bold; font-size: 15px;">
+                            <i class="fa fa-magic" style="margin-right: 6px;"></i>
+                            Analyze CV's
+                        </button>
+                        <field name="is_matching_in_progress" invisible="1"/>
+                        <span attrs="{'invisible': [('is_matching_in_progress', '=', False)]}">
+                            <i class="fa fa-spinner fa-spin"/>
+                            Processing CV analysis...
+                        </span>
+                    </group>
+                    <group>
+
+
+                        <group>
+                            <h3 style="color: #2F2FA2">Matched CV Results</h3>
+                            <br/>
+                            <div style="width: 1100px; overflow-x: auto; border: 1px solid #ddd; padding: 8px; border-radius: 8px;">
+                                <field name="cv_matching_result_ids">
+                                    <tree decoration-success="score >= 80" decoration-warning="60 &lt;= score &lt; 80"
+                                          decoration-danger="score &lt; 60">
+                                        <field name="cv_name"/>
+                                        <field name="email"/>
+                                        <field name="job_id" readonly="1"/>
+                                        <field name="score"/>
+                                        <field name="experience_score"/>
+                                        <field name="education_score"/>
+                                        <field name="skills_score"/>
+                                        <field name="required_skills_score"/>
+                                        <field name="shortlist_recommended"/>
+                                    </tree>
+                                </field>
+                            </div>
+                        </group>
+
+
+                        <!-- Enhanced buttons with score filtering -->
+                        <div class="oe_button_box"
+                             style="margin-top: 15px; display: flex; gap: 12px; margin-left: 0.2%; width:100%;">
+
+                            <button string="Create Applicants"
+                                    type="object"
+                                    name="action_create_applicants_from_matching"
+                                    class="btn btn-primary shadow-sm"
+                                    style="padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px;"
+                                    attrs="{'invisible': [('qualified_cv_count', '=', 0)]}"
+                                    help="Create applicants only for candidates with scores 60% or higher"/>
+
+                            <button string="View All CV Results"
+                                    type="object"
+                                    name="action_view_all_cv_results"
+                                    class="btn btn-success shadow-sm"
+                                    style="padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px;"
+                                    attrs="{'invisible': [('matched_cv_results', '=', [])]}"/>
+                        </div>
+
+                        <!-- Score Statistics -->
+                        <group attrs="{'invisible': [('matched_cv_results', '=', [])]}">
+                            <h3 class="o_form_label">
+                                📊 CV Matching Statistics
+                            </h3>
+                            <field name="qualified_cv_count" string=" ✅ Qualified"/>
+                            <field name="low_score_cv_count" string=" ❌ Disqualified"/>
+                            <field name="applicant_count_from_matching" string="👥 Applicants Created"/>
+                        </group>
+                    </group>
+
+                </page>
+                <page string="CV Matching Score">
+                    <group>
+                        <!-- Section Title -->
+                        <div class="o_form_label"
+                             style="font-size: 18px; font-weight: bold; color: #2F2FA2; margin-top: 10px;"
+                             attrs="{'invisible': [('matched_cv_results', '=', [])]}">
+                            📄 CV Matching Results
+                        </div>
+                        <br/>
+
+                        <!-- Scrollable Container for Results -->
+                        <div style="overflow-x: auto; overflow-y: auto; max-height: 600px; max-width:1000px; border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin-top: 10px; background-color: #f9f9f9;"
+                             attrs="{'invisible': [('matched_cv_results', '=', [])]}">
+
+                            <!-- CV Tree View -->
+                            <field name="matched_cv_results">
+                                <tree string="Matched CVs" decoration-success="score >= 70"
+                                      decoration-warning="score &lt; 70 and score &gt;= 40"
+                                      decoration-danger="score &lt; 40">
+                                    <field name="cv_name"/>
+                                    <field name="score" widget="progressbar"/>
+                                    <field name="analysis"/>
+                                </tree>
+
+                                <!-- Optional Form View on Click -->
+                                <form>
+                                    <group>
+                                        <field name="cv_name"/>
+                                        <field name="score" widget="progressbar"/>
+                                    </group>
+                                    <field name="analysis" widget="list"/>
+                                </form>
+                            </field>
+                        </div>
+                    </group>
+                </page>
+                <page string="Notes">
+                    <field name="notes" placeholder="Add Notes Here"/>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- Add  mass-mailing wizard in Applicant Form and list with the composition wizard  -->
+    <record id="action_partner_mass_mail" model="ir.actions.act_window">
+        <field name="name">Send email</field>
+        <field name="res_model">mail.compose.message</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context" eval="{
+                'default_composition_mode': 'mass_mail',
+                'default_partner_to': '{{ object.id or \'\' }}',
+                'default_use_template': False,
+                'default_reply_to_force_new': True,
+            }"/>
+        <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+    <!--    Inherit Kanban view and url field -->
+    <record id="url_kanban_view" model="ir.ui.view">
+        <field name="name">Kanban Url</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="website_hr_recruitment.hr_job_website_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_published']" position="after">
+                <field name="job_url" attrs="{'invisible': [('is_published', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Job Position Tree Inherit-->
+    <record id="job_position_tree_inherit" model="ir.ui.view">
+        <field name="name">job.position.tree.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="address_id" string="Client"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- CV Matching Result form view enhancement from third file -->
+
+    <record id="cv_matching_result_form_view_enhanced" model="ir.ui.view">
+        <field name="name">cv.matching.result.form.enhanced</field>
+        <field name="model">cv.matching.result</field>
+        <field name="arch" type="xml">
+            <form string="CV Matching Result">
+                <header>
+                    <button string="Create Applicant" type="object"
+                            name="action_create_applicant_from_result"
+                            class="btn-primary"/>
+                    <field name="shortlist_recommended" widget="boolean_button"
+                           options="{'terminology': {'string_true': 'Recommended', 'string_false': 'Not Recommended'}}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="cv_name"/>
+                        </h1>
+                        <h2>
+                            Score:
+                            <field name="score"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="email"/>
+                            <field name="job_id"/>
+                            <field name="cv_id" domain="[('parsed_name', '!=', False)]"/>
+                        </group>
+                        <group>
+                            <field name="experience_score"/>
+                            <field name="education_score"/>
+                            <field name="skills_score"/>
+                            <field name="required_skills_score"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Analysis">
+                            <field name="analysis" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- CV Matching Result tree view from third file -->
+
+
+    <record id="cv_matching_result_tree_view" model="ir.ui.view">
+        <field name="name">cv.matching.result.tree</field>
+        <field name="model">cv.matching.result</field>
+        <field name="arch" type="xml">
+            <tree string="CV Matching Results" decoration-success="score >= 80"
+                  decoration-warning="60 &lt;= score &lt; 80" decoration-danger="score &lt; 60">
+                <field name="cv_name"/>
+                <field name="email"/>
+                <field name="job_id" readonly="1"/>
+                <field name="score"/>
+                <field name="experience_score"/>
+                <field name="education_score"/>
+                <field name="skills_score"/>
+                <field name="required_skills_score"/>
+                <field name="shortlist_recommended"/>
+                <button string="Create Applicant" type="object"
+                        name="action_create_applicant_from_result" icon="fa-plus"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for CV Matching Results from third file -->
+    <record id="action_cv_matching_result" model="ir.actions.act_window">
+        <field name="name">CV Matching Results</field>
+        <field name="res_model">cv.matching.result</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="cv_matching_result_tree_view"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,217 @@
+<odoo>
+
+    <record id="view_cv_attachment_manager_kanban" model="ir.ui.view">
+        <field name="name">cv.attachment.manager.kanban</field>
+        <field name="model">cv.attachment.manager</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="parsed_name"/>
+                <field name="parsed_type"/>
+                <field name="parsed_date"/>
+                <field name="parsed_skills"/>
+                <field name="attachment_ids"/>
+                <field name="file_url"/> <!-- Added missing field -->
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+
+                                <!-- File Type Icon -->
+                                <t t-if="record.parsed_type and record.parsed_type.value">
+                                    <t t-set="file_type" t-value="record.parsed_type.value.toLowerCase()"/>
+                                    <t t-if="file_type == 'pdf'">
+                                        <img t-att-src="'/ateca_recruitment_extend/static/img/pdf.png'"
+                                             style="height:50px; width:50px;" alt="PDF"/>
+                                    </t>
+                                    <t t-if="file_type == 'doc' or file_type == 'docx'">
+                                        <img t-att-src="'/ateca_recruitment_extend/static/img/docx.png'"
+                                             style="height:50px; width:50px;" alt="DOC"/>
+                                    </t>
+                                    <t t-if="file_type == 'ppt' or file_type == 'pptx'">
+                                        <img t-att-src="'/ateca_recruitment_extend/static/img/PPT.jpg'"
+                                             style="height:35px; width:30px;" alt="PPT"/>
+                                    </t>
+                                    <t t-if="!['pdf', 'doc', 'docx', 'ppt', 'pptx'].includes(file_type)">
+                                        <img t-att-src="'/ateca_recruitment_extend/static/img/default.jpeg'"
+                                             style="height:35px; width:30px;" alt="File"/>
+                                    </t>
+                                </t>
+
+                                <!-- File Name -->
+                                <t t-if="record.file_url and record.file_url.value">
+                                    <a t-att-href="record.file_url.value" target="_blank"
+                                       style="text-decoration: none; font-weight: bold;">
+                                        <t t-esc="record.parsed_name.value || 'Unnamed File'"/>
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <span style="font-weight: bold;">
+                                        <t t-esc="record.parsed_name.value || 'Unnamed File'"/>
+                                    </span>
+                                </t>
+                            </div>
+
+                            <!-- Parsed Date -->
+                            <div class="text-muted" style="margin-top: 5px; margin-left: 20px;">
+                                <t t-esc="record.parsed_date and record.parsed_date.value || 'N/A'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- Form View with Multiple File Upload -->
+    <record id="view_cv_attachment_form" model="ir.ui.view">
+        <field name="name">cv.attachment.manager.form</field>
+        <field name="model">cv.attachment.manager</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <header>
+                        <button name="parse_and_create_individual_views"
+                                type="object"
+                                string="Parse and Create Views"
+                                class="btn-success"/>
+
+                    </header>
+
+                    <group>
+                        <field name="attachment_ids" widget="many2many_binary" options="{'multiple': True}"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_cv_attachment_tree" model="ir.ui.view">
+        <field name="name">cv.attachment.manager.tree</field>
+        <field name="model">cv.attachment.manager</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="extracted_candidate_name"/>
+                <field name="parsed_email"/>
+                <field name="parsed_date"/>
+                <field name="parsed_gender"/>
+                <field name="parsed_skills"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cv_attachment_search" model="ir.ui.view">
+        <field name="name">cv.attachment.manager.search</field>
+        <field name="model">cv.attachment.manager</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Basic Search -->
+                <field name="parsed_name" string="File Name"/>
+                <field name="extracted_candidate_name"/>
+                <field name="parsed_email" string="Email"/>
+
+                <!-- Skills Search -->
+                <field name="parsed_skills" string="Skills"
+                       filter_domain="[('parsed_skills', 'ilike', self)]"/>
+
+                <!-- Experience Search -->
+                <field name="parsed_experience_years" string="Years of Experience"/>
+
+                <!-- Quick Filters -->
+                <separator/>
+
+                <filter name="filter_has_skills" string="Has Skills"
+                        domain="[('parsed_skills', '!=', False), ('parsed_skills', '!=', '')]"/>
+                <filter name="filter_has_experience" string="Has Experience Data"
+                        domain="[('parsed_experience_years', '>', 0)]"/>
+
+                <!-- Experience Range Filters -->
+                <separator/>
+                <filter name="filter_junior" string="Junior (0-2 years)"
+                        domain="[('parsed_experience_years', '&gt;=', 0), ('parsed_experience_years', '&lt;=', 2)]"/>
+                <filter name="filter_mid" string="Mid-level (3-5 years)"
+                        domain="[('parsed_experience_years', '&gt;=', 3), ('parsed_experience_years', '&lt;=', 5)]"/>
+                <filter name="filter_senior" string="Senior (6-10 years)"
+                        domain="[('parsed_experience_years', '&gt;=', 6), ('parsed_experience_years', '&lt;=', 10)]"/>
+                <filter name="filter_expert" string="Expert (10+ years)"
+                        domain="[('parsed_experience_years', '&gt;', 10)]"/>
+
+                <!-- Gender Filter -->
+                <separator/>
+                <filter name="filter_male" string="Male" domain="[('parsed_gender', '=', 'male')]"/>
+                <filter name="filter_female" string="Female" domain="[('parsed_gender', '=', 'female')]"/>
+                <filter name="filter_other" string="Other" domain="[('parsed_gender', '=', 'other')]"/>
+
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="group_by_gender" string="Gender" context="{'group_by': 'parsed_gender'}"/>
+                </group>
+
+                <!-- Common Skills Filters -->
+                <separator/>
+                <filter name="filter_python" string="Python"
+                        domain="[('parsed_skills', 'ilike', 'Python')]"/>
+                <filter name="filter_javascript" string="JavaScript"
+                        domain="[('parsed_skills', 'ilike', 'JavaScript')]"/>
+                <filter name="filter_java" string="Java"
+                        domain="[('parsed_skills', 'ilike', 'Java')]"/>
+                <filter name="filter_react" string="React"
+                        domain="[('parsed_skills', 'ilike', 'React')]"/>
+                <filter name="filter_aws" string="AWS"
+                        domain="[('parsed_skills', 'ilike', 'AWS')]"/>
+                <filter name="filter_docker" string="Docker"
+                        domain="[('parsed_skills', 'ilike', 'Docker')]"/>
+
+                <!-- Grouping -->
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="File Type" name="group_type"
+                            context="{'group_by': 'parsed_type'}"/>
+                    <filter string="Experience Level" name="group_experience"
+                            context="{'group_by': 'parsed_experience_years'}"/>
+                    <filter string="Upload Date" name="group_date"
+                            context="{'group_by': 'parsed_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_cv_attachment_manager" model="ir.actions.act_window">
+        <field name="name">CV Bank</field>
+        <field name="res_model">cv.attachment.manager</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('attachment_ids', '!=', False)]</field>
+        <field name="search_view_id" ref="view_cv_attachment_search"/>
+        <field name="context">{}</field>
+<!--        <field name="context">-->
+<!--            {-->
+<!--&lt;!&ndash;            'search_default_filter_has_skills': True,&ndash;&gt;-->
+<!--            'default_job_id': context.get('active_id', False),-->
+<!--            'job_name': context.get('job_name', ''),-->
+<!--            }-->
+<!--        </field>-->
+        <field name="domain">
+            [
+            '&amp;',
+            ('parsed_name', '!=', False),
+            '&amp;',
+            ('attachment_ids', '!=', False),
+            ('parsed_skills', 'ilike', context.get('job_name', ''))
+            ]
+        </field>
+
+    </record>
+
+
+    <menuitem id="menu_cv_attachment"
+              name="CV Bank"
+              parent="hr_recruitment.menu_hr_recruitment_root"
+              action="action_cv_attachment_manager"
+              sequence="10"/>
+
+
+</odoo>

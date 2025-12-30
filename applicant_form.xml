@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <record id="view_applicant_form_inherit" model="ir.ui.view">
+        <field name="name">applicant.form.inherit</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='create_employee_from_applicant']" position="after">
+                <button name="share_to_whatsapp" class="oe_highlight" string="Share Whatsapp" type="object"
+                        icon="fa-whatsapp" style="background-color:#5cbd24;color:white;border-radius:10px;"/>
+            </xpath>
+            <xpath expr="//button[@name='create_employee_from_applicant']" position="after">
+                <button name="open_mail_compose_for_individual" class="oe_highlight" string="Send Email" type="object"/>
+            </xpath>
+            <!-- ADD THIS NEW BUTTON -->
+            <xpath expr="//button[@name='open_mail_compose_for_individual']" position="after">
+                <button name="action_score_cv_against_job" class="oe_highlight" string="Score CV" type="object"
+                        icon="fa-calculator" style="background-color:#17a2b8;color:white;border-radius:10px;"/>
+            </xpath>
+
+            <!-- CV matching score display from third file -->
+            <xpath expr="//div[@class='oe_title']" position="after">
+                <div class="alert alert-info" attrs="{'invisible': [('is_from_cv_matching', '=', False)]}">
+                    <strong>CV Matching Score:<field name="cv_matching_score"/>%
+                    </strong>
+                    <button string="View Details" type="object" name="action_view_cv_matching_details"
+                            class="btn btn-link btn-sm"/>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='email_from']" position="before">
+                <field name="gender" style="color:blue"/>
+            </xpath>
+
+             <!-- Make email, phone and mobile fields visible and styled -->
+            <xpath expr="//field[@name='email_from']" position="attributes">
+                <attribute name="style">color:blue; font-weight:bold;</attribute>
+                <attribute name="readonly">0</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='partner_phone']" position="attributes">
+                <attribute name="style">color:blue; font-weight:bold;</attribute>
+                <attribute name="widget">phone</attribute>
+                <attribute name="readonly">0</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='partner_mobile']" position="attributes">
+                <attribute name="style">color:blue; font-weight:bold;</attribute>
+                <attribute name="widget">phone</attribute>
+                <attribute name="readonly">0</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+          
+            <xpath expr="//field[@name='legend_done']" position="after">
+                <label for="id" string="Application ID" style="color:blue;"/>
+                <field name="id"/>
+                <br/>
+                <label for="candidate_id" string="Candidate ID" style="color:blue;"/>
+                <field name="candidate_id"/>
+            </xpath>
+            <xpath expr="//field[@name='type_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='type_id']" position="before">
+                <field name="DateOfBirth" style="color:blue"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="refer_by" style="color:blue"/>
+            </xpath>
+            <notebook position="inside">
+                <page string="CV Matching Details" attrs="{'invisible': [('is_from_cv_matching', '=', False)]}">
+                    <group>
+                        <group>
+                            <field name="cv_matching_result_id" readonly="1"/>
+                            <field name="cv_matching_score" readonly="1"/>
+                            <field name="is_from_cv_matching" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Analysis">
+                        <field name="cv_matching_analysis" readonly="1" nolabel="1"/>
+                    </group>
+                </page>
+                <page string="Additional Answers">
+                    <group>
+                        <field name="answer_ids">
+                            <tree>
+                                <field name="question_id"/>
+                                <field name="answer"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+
+    <!--Inherit tree view and add activity field of chatter and add send email button-->
+    <record id="view_applicant_tree_inherit" model="ir.ui.view">
+        <field name="name">Applicant tree inherit</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
+        <field name="arch" type="xml">
+            <!-- Add color decorations based on CV matching score -->
+            <tree position="attributes">
+                <attribute name="decoration-success">cv_matching_score >= 80</attribute>
+                <attribute name="decoration-warning">cv_matching_score >= 60 and cv_matching_score &lt; 80</attribute>
+                <attribute name="decoration-danger">cv_matching_score > 0 and cv_matching_score &lt; 60</attribute>
+            </tree>
+
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="activity_ids" string="Activity"/>
+            </xpath>
+            <!-- CV matching score column from third file -->
+            <xpath expr="//field[@name='priority']" position="after">
+                <field name="show_cv_score" invisible="1"/>
+                <field name="cv_matching_score" string="CV Score %"
+                       attrs="{'invisible': [('show_cv_score', '!=', False)]}"/>
+            </xpath>
+            <tree>
+                <header>
+                    <button name="space" type="object"/>
+                    <button string="Send Email" type="object" class="oe_highlight" name="open_mail_compose"/>
+                </header>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_applicant_kanban_inherit" model="ir.ui.view">
+        <field name="name">hr.applicant.kanban.inherit</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+        <field name="arch" type="xml">
+            <!-- Add invisible fields needed for computation -->
+            <xpath expr="//field[@name='partner_name']" position="after">
+                <field name="cv_matching_score" invisible="1"/>
+                <field name="is_from_cv_matching" invisible="1"/>
+            </xpath>
+
+
+            <xpath expr="//div[contains(@class,'oe_kanban_content')]" position="replace">
+                <div class="o_kanban_record_bottom"
+                     t-attf-style="#{record.cv_matching_score.raw_value &gt;= 80 ? 'background-color: #d4edda; border: 1px solid #28a745;' : record.cv_matching_score.raw_value &gt;= 60 ? 'background-color: #fff3cd; border: 1px solid #fd7e14;' : record.cv_matching_score.raw_value &gt; 0 ? 'background-color: #f8d7da; border: 1px solid #dc3545;' : ''}">
+                    <!--<strong>CV Score: <field name="cv_matching_score"/>%</strong>-->
+                    <div class="oe_kanban_content">
+                        <div class="o_kanban_record_top">
+                            <div class="o_kanban_record_headings">
+                                <b class="o_kanban_record_title mt8" t-if="record.partner_name.raw_value">
+                                    <field name="partner_name"/>
+                                    <br/>
+                                </b>
+                                <t t-else="1">
+                                    <i class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </i>
+                                    <br/>
+                                </t>
+                                <div class="o_kanban_record_subtitle"
+                                     invisible="context.get('search_default_job_id', False)">
+                                    <field name="job_id"/>
+
+                                </div>
+                                <span>CV Score: <field name="cv_matching_score"/>%
+                                </span>
+
+                            </div>
+                        </div>
+                        <field name="categ_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        <t t-if="record.partner_mobile.raw_value">
+                            <i class="fa fa-mobile mr4" role="img" aria-label="Mobile" title="Mobile"/>
+                            <field name="partner_mobile" widget="phone"/>
+                            <br/>
+                        </t>
+                        <div class="o_kanban_record_bottom mt4">
+                            <div class="oe_kanban_bottom_left">
+                                <div class="float-left mr4" groups="base.group_user">
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="o_kanban_inline_block mr8">
+                                    <field name="activity_ids" widget="kanban_activity"/>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_bottom_right">
+                                <a name="action_get_attachment_tree_view" type="object">
+                                    <span title="Documents">
+                                        <i class="fa fa-paperclip" role="img" aria-label="Documents"/>
+                                        <t t-esc="record.attachment_number.raw_value"/>
+                                    </span>
+                                </a>
+                                <div class="o_kanban_state_with_padding ml-1 mr-2">
+                                    <field name="kanban_state" widget="kanban_state_selection"/>
+                                    <field name="legend_normal" invisible="1"/>
+                                    <field name="legend_blocked" invisible="1"/>
+                                    <field name="legend_done" invisible="1"/>
+                                </div>
+                                <field name="user_id" widget="many2one_avatar_user"/>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+
+
+    <!--        This action is used to display those records of applicants which are Refused-->
+    <record id="rejected_action_id" model="ir.actions.act_window">
+        <field name="name">Rejected</field>
+        <field name="res_model">hr.applicant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('web_ribbon_title', '=', 'Refused'), ('active', '=', False)]</field>
+    </record>
+
+    <!--This menu is used for getting those records from Applicants which are Refused-->
+    <menuitem id="rejected_action_menu_id" name="Rejected Applicant" parent="hr_recruitment.report_hr_recruitment"
+              action="rejected_action_id" sequence="9"/>
+
+</odoo>

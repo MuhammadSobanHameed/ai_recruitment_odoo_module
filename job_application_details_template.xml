@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Job Application Status Template - Shows all applications for all jobs -->
+    <template id="portal_job_application_status" name="Job Application Status">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Applied Application Status</t>
+            </t>
+            
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="text-center text-white bg-primary py-3 rounded">Applied Application Status</h2>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Sort By:</span>
+                            <select class="form-select" id="sortBy" onchange="window.location.href = updateUrlParam('sortby', this.value)">
+                                <option value="date" t-att-selected="'selected' if sortby == 'date' else None">Date</option>
+                                <option value="job" t-att-selected="'selected' if sortby == 'job' else None">Job Position</option>
+                                <option value="applicant_count" t-att-selected="'selected' if sortby == 'applicant_count' else None">Application Count</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search in All" 
+                                   t-att-value="search or ''" id="searchInput"/>
+                            <button class="btn btn-outline-secondary" type="button" onclick="performSearch()">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <t t-if="applicants">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Application Number</th>
+                                    <th>Name</th>
+                                    <th>Applied On</th>
+                                    <th>Job Position</th>
+                                    <th>Application Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="applicants" t-as="applicant">
+                                    <tr>
+                                        <td>
+                                            <a t-attf-href="/my/job_application/#{applicant.id}" 
+                                               class="text-decoration-none">
+                                                <t t-out="applicant.name or applicant.partner_name or 'N/A'"/>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <t t-out="applicant.partner_name or applicant.name or 'N/A'"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="applicant.create_date" t-options="{'widget': 'date'}"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="applicant.job_id.name or 'N/A'"/>
+                                        </td>
+                                        <td>
+                                            <t t-set="stage_name" t-value="applicant.stage_id.name or 'New'"/>
+                                            <t t-if="stage_name == 'New'">
+                                                <span class="badge bg-primary">New</span>
+                                            </t>
+                                            <t t-elif="stage_name in ['Initial Qualification', 'Initial Phone Call']">
+                                                <span class="badge bg-warning">Initial Qualification</span>
+                                            </t>
+                                            <t t-elif="stage_name in ['First Interview']">
+                                                <span class="badge bg-primary">First Interview</span>
+                                            </t>
+                                            <t t-elif="stage_name in ['Second Interview']">
+                                                <span class="badge bg-secondary">Second Interview</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-info"><t t-out="stage_name"/></span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <t t-if="pager" t-call="portal.pager"/>
+                </t>
+                
+                <t t-if="not applicants">
+                    <div class="alert alert-info text-center" role="alert">
+                        <h4 class="alert-heading">No Job Applications Found</h4>
+                        <p>No job applications are currently available.</p>
+                        <hr/>
+                        <p class="mb-0">
+                            <a href="/jobs" class="btn btn-primary">Browse Available Jobs</a>
+                        </p>
+                    </div>
+                </t>
+            </div>
+            
+            <script>
+                function updateUrlParam(param, value) {
+                    const url = new URL(window.location);
+                    url.searchParams.set(param, value);
+                    return url.toString();
+                }
+                
+                function performSearch() {
+                    const searchValue = document.getElementById('searchInput').value;
+                    const url = new URL(window.location);
+                    if (searchValue) {
+                        url.searchParams.set('search', searchValue);
+                    } else {
+                        url.searchParams.delete('search');
+                    }
+                    window.location.href = url.toString();
+                }
+                
+                // Allow Enter key to trigger search
+                document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            </script>
+        </t>
+    </template>
+
+
+    <!-- Breadcrumbs template -->
+    <template id="portal_breadcrumbs_job_applications"
+              name="Portal layout: job applications breadcrumbs"
+              inherit_id="portal.portal_breadcrumbs" priority="60">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'job_applications'" class="breadcrumb-item active">
+                <span>Job Applications</span>
+            </li>
+
+        </xpath>
+    </template>
+
+    <!-- Add menu item to portal home -->
+    <template id="portal_my_home_job_applications" 
+              name="Portal My Home: job applications entries" 
+              inherit_id="portal.portal_my_home" priority="60">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Job Applications</t>
+                <t t-set="url" t-value="'/my/job_applications'"/>
+                <t t-set="placeholder_count" t-value="'job_applications_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+
+</odoo>
